@@ -9,9 +9,18 @@ int main(int argc, char *argv[]) {
     int command;
     sscanf(argv[1], "%d", &command);
 
+    char buffer[100]; // Create a character array (string) to hold the result
+
     if (command == 1) {
-        char buffer[100]; // Create a character array (string) to hold the result
-        snprintf(buffer, sizeof(buffer), "%d\n", math_sum(a, b) );
+        snprintf(buffer, sizeof(buffer), "%d\n", math_sum(a, b));
+        printf("%s\n", buffer);
+        write_result_to_file(buffer);
+
+        return 0;
+    }
+
+    if (command == 2) {
+        snprintf(buffer, sizeof(buffer), "%d\n", math_multiply(a, b));
         printf("%s\n", buffer);
         write_result_to_file(buffer);
 

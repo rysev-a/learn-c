@@ -1,6 +1,7 @@
 import pytest
 import subprocess
 from uuid import uuid4
+import subprocess
 import os
 
 @pytest.fixture()
@@ -18,6 +19,26 @@ def output_file():
     yield output_file
     os.remove(output_file)
     os.remove("output.txt")
+
+
+@pytest.fixture()
+def run_with_args():
+    output_file = f"{uuid4()}.out"
+    subprocess.run(
+        [
+            "gcc",
+            "-o",
+            output_file,
+            "main.c",
+        ]
+    )
+    def run(*args):
+        subprocess.run([f"./{output_file}", *args])
+
+    yield run
+    os.remove(output_file)
+    os.remove("output.txt")
+
 
 
 @pytest.fixture()
