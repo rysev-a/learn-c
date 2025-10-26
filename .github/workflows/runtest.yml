@@ -1,0 +1,13 @@
+name: Run Unit Test via Pytest
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the latest version of uv and set the python version
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: 3.13
+      - name: Test cpp main.c
+        run: uv run --frozen pytest tests
