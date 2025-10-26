@@ -27,6 +27,14 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    if (command == 3) {
+        char d;
+        sscanf(argv[2], "%c", &d);
+        snprintf(buffer, sizeof(buffer), "ASCII-code %c=%d\n" , d , d);
+        write_result_to_file(buffer);
+        return 0;
+    }
+
     write_result_to_file("Unknown command\n");
 
     return 0;

@@ -1,5 +1,4 @@
 import pytest
-import subprocess
 from uuid import uuid4
 import subprocess
 import os
