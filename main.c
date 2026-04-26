@@ -1,66 +1,110 @@
 #include <stdio.h>
 #include <string.h>
 #include "library/math.c"
+#include "library/strings.c"
+
+// write result to output.txt
 #include "library/write_to_file.c"
 
-int main(int argc, char *argv[]) {
+// use strcspn to remove \n\r symbols
 
-    char command[50];
-    int a, b;
-    sscanf(argv[1], "%s", command);
 
-    // buffer for write in result file
-    char buffer[100];
+FILE *fptr;
 
+// Open a file in read mode
+
+int main() {
+    fptr = fopen("tmp/input.txt", "r");
+
+    int arg_1_int;
+    int arg_2_int;
+    char arg_1_str[100];
+    char arg_2_str[100];
+
+    char command[100];
+    char result[100];
+
+    fgets(command, 100, fptr);
+    command[strcspn(command, "\r\n")] = 0;
+
+    // read first argument
+    char arg_1[100];
+    fgets(arg_1, 100, fptr);
+
+
+    char arg_1_buffer[100];
+    int i = 2;
+
+    while (arg_1[i]) {
+        if (arg_1[0] == 'd') {
+            arg_1_buffer[i - 2] = arg_1[i];
+        }
+
+        if (arg_1[0] == 's') {
+            arg_1_str[i - 2] = arg_1[i];
+        }
+
+        i++;
+    }
+
+    if (arg_1[0] == 'd') {
+        arg_1_int = atoi(arg_1_buffer);
+    } else {
+        arg_1_str[strcspn(arg_1_str, "\r\n")] = 0;
+    }
+
+    // read second argument
+    char arg_2[100];
+    fgets(arg_2, 100, fptr);
+    char arg_2_buffer[100];
+    i = 2;
+    while (arg_2[i]) {
+        if (arg_2[0] == 'd') {
+            arg_2_buffer[i - 2] = arg_2[i];
+        }
+
+        if (arg_2[0] == 's') {
+            arg_2_str[i - 2] = arg_2[i];
+        }
+
+        i++;
+    }
+
+    if (arg_2[0] == 'd') {
+        arg_2_int = atoi(arg_2_buffer);
+    } else {
+        arg_2_str[strcspn(arg_2_str, "\r\n")] = 0;
+    }
+
+    // math functions
     if (strcmp(command, "sum") == 0) {
-        sscanf(argv[2], "%d", &a);
-        sscanf(argv[3], "%d", &b);
-
-        snprintf(buffer, sizeof(buffer), "%d\n", math_sum(a, b));
-        write_result_to_file(buffer);
-
-        return 0;
+        snprintf(result, sizeof(result), "%d\n", math_sum(arg_1_int, arg_2_int));
     }
 
     if (strcmp(command, "multiply") == 0) {
-        sscanf(argv[2], "%d", &a);
-        sscanf(argv[3], "%d", &b);
-
-        snprintf(buffer, sizeof(buffer), "%d\n", math_multiply(a, b));
-        write_result_to_file(buffer);
-
-        return 0;
+        snprintf(result, sizeof(result), "%d\n", math_multiply(arg_1_int, arg_2_int));
     }
 
-
     if (strcmp(command, "quotient") == 0) {
-        sscanf(argv[2], "%d", &a);
-        sscanf(argv[3], "%d", &b);
-
-        snprintf(buffer, sizeof(buffer), "%d\n", math_get_quotient(a, b));
-        write_result_to_file(buffer);
-
-        return 0;
+        snprintf(result, sizeof(result), "%d\n", math_get_quotient(arg_1_int, arg_2_int));
     }
 
     if (strcmp(command, "remainder") == 0) {
-        sscanf(argv[2], "%d", &a);
-        sscanf(argv[3], "%d", &b);
-
-        snprintf(buffer, sizeof(buffer), "%d\n", math_get_remainder(a, b));
-        write_result_to_file(buffer);
-
-        return 0;
+        snprintf(result, sizeof(result), "%d\n", math_get_remainder(arg_1_int, arg_2_int));
     }
 
-    if (strcmp(command, "ascii") == 0) {
-        char e;
-        sscanf(argv[2], "%c", &e);
-        snprintf(buffer, sizeof(buffer), "ASCII-code %c=%d\n" , e , e);
-        write_result_to_file(buffer);
-        return 0;
+    // string functions
+    if (strcmp(command, "length") == 0) {
+        snprintf(result, sizeof(result), "%d\n", get_string_length(arg_1_str));
     }
 
-    write_result_to_file("Unknown command\n");
+    if (strcmp(command, "is_substring") == 0) {
+        snprintf(result, sizeof(result), "%d\n", is_substring(arg_1_str, arg_2_str));
+    }
+
+
+    write_result_to_file(result);
+    fclose(fptr);
+
     return 0;
-}
+ }
