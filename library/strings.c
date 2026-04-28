@@ -1,3 +1,6 @@
+#include <cmath>
+#include <ctype.h>
+
 int get_string_length(char* input_string) {
     int i = 0;
     while (input_string[i]) {
@@ -52,3 +55,67 @@ int is_substring(char* substring, char* full_string) {
     };
     return 0;
 }
+
+
+int is_beginning(char* begin, char* full_string) {
+    int begin_len = get_string_length(begin);
+    int full_string_length = get_string_length(full_string);
+
+    if (begin_len > full_string_length) {
+        return 0;
+    }
+
+    int i = 0;
+    while (i < begin_len) {
+        if (begin[i] != full_string[i]) {
+            return 0;
+        }
+        i++;
+    }
+
+    return 1;
+}
+
+
+int is_palindrome(char* input_string) {
+    int string_length = get_string_length(input_string);
+    int i = 0;
+    int j = string_length - 1;
+    while (i < j) {
+        if (input_string[i] != input_string[j]) {
+            return 0;
+        }
+        i++;
+        j--;
+    }
+
+    return 1;
+}
+
+
+int is_lower_case(char* input_string) {
+    int string_length = get_string_length(input_string);
+
+    for (int i = 0; i < string_length; i++) {
+        if (input_string[i] < 97 || input_string[i] > 122) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+//int is_identifier(char* input_string) {
+//    if (input_string[0] < 97 || input_string[0] > 122) {
+//        return 0;
+//    }
+//
+//    int i = 1;
+//    while (input_string[i]) {
+//        if (is_alpha(input_string[i])) {
+//            return 0;
+//        }
+//    }
+//
+//    return 1;
+//}

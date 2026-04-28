@@ -102,9 +102,21 @@ int main() {
         snprintf(result, sizeof(result), "%d\n", is_substring(arg_1_str, arg_2_str));
     }
 
+    if (strcmp(command, "is_beginning") == 0) {
+        snprintf(result, sizeof(result), "%d\n", is_beginning(arg_1_str, arg_2_str));
+    }
+
+    if (strcmp(command, "is_palindrome") == 0) {
+        snprintf(result, sizeof(result), "%d\n", is_palindrome(arg_1_str));
+    }
+
+    if (strcmp(command, "is_lower_case") == 0) {
+        snprintf(result, sizeof(result), "%d\n", is_lower_case(arg_1_str));
+    }
 
     write_result_to_file(result);
     fclose(fptr);
 
     return 0;
  }
+
