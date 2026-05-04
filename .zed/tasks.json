@@ -1,0 +1,12 @@
+[
+  {
+    "label": "compile and run",
+    "command": "gcc main.c -o main && ./main",
+    "reveal": "never",
+  },
+  {
+    "label": "test",
+    "command": "uv run pytest",
+    "reveal": "never",
+  },
+]

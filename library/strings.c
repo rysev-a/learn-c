@@ -1,5 +1,5 @@
-#include <cmath>
 #include <ctype.h>
+#include <stdlib.h>
 
 int get_string_length(char* input_string) {
     int i = 0;
@@ -105,17 +105,108 @@ int is_lower_case(char* input_string) {
     return 1;
 }
 
-//int is_identifier(char* input_string) {
-//    if (input_string[0] < 97 || input_string[0] > 122) {
-//        return 0;
-//    }
-//
-//    int i = 1;
-//    while (input_string[i]) {
-//        if (is_alpha(input_string[i])) {
-//            return 0;
-//        }
-//    }
-//
-//    return 1;
-//}
+int is_identifier(char* input_string) {
+   if (!isalpha(input_string[0])) {
+       return 0;
+   }
+
+   int i = 1;
+   while (input_string[i]) {
+       if (!isalnum(input_string[i])) {
+           return 0;
+       }
+       i++;
+   }
+
+   return 1;
+}
+
+void upcase(char* input_string) {
+    int string_length = get_string_length(input_string);
+
+    for (int i = 0; i < string_length; i++) {
+        if (input_string[i] >= 97 && input_string[i] <= 122) {
+            input_string[i] -= 32;
+        }
+    }
+}
+
+
+void swap_case(char* input_string) {
+    int string_length = get_string_length(input_string);
+
+    for (int i = 0; i < string_length; i++) {
+        if (input_string[i] >= 97 && input_string[i] <= 122) {
+            input_string[i] -= 32;
+        } else if (input_string[i] >= 65 && input_string[i] <= 90) {
+            input_string[i] += 32;
+        }
+    }
+}
+
+
+void reverse(char* input_string) {
+    int string_length = get_string_length(input_string);
+    int i = 0;
+    int j = string_length - 1;
+    while (i < j) {
+        char temp = input_string[i];
+        input_string[i] = input_string[j];
+        input_string[j] = temp;
+        i++;
+        j--;
+    }
+}
+
+
+char* duplicate_string(char* input_string, int count) {
+    int string_length = get_string_length(input_string);
+    char* result = malloc(count * string_length + 1);
+    for (int repeat_index = 0; repeat_index < count; repeat_index++) {
+        for (int i = 0; i < string_length; i++) {
+            result[repeat_index * string_length + i] = input_string[i];
+        }
+    }
+    result[count * string_length] = '\0';
+
+    return result;
+}
+
+char* concat_strings(char* left_string, char* right_string) {
+    int left_string_length = get_string_length(left_string);
+    int right_string_length = get_string_length(right_string);
+    int result_length = left_string_length + right_string_length;
+
+    char* result = malloc(result_length + 1);
+
+
+    for (int i = 0; i < left_string_length; i++) {
+        result[i] = left_string[i];
+    }
+
+    for (int i = 0; i < right_string_length; i++) {
+        result[left_string_length + i] = right_string[i];
+    }
+
+    result[result_length] = '\0';
+    return result;
+}
+
+char* delete_symbol(char* input_str, int index) {
+    int original_string_length = get_string_length(input_str);
+    int result_length = original_string_length - 1;
+    char* result = malloc(result_length + 1);
+
+    int shift = 0;
+
+    for (int i = 0; i < original_string_length; i++) {
+        if (i == index) {
+            shift = 1;
+            continue;
+        }
+        result[i - shift] = input_str[i];
+    }
+
+    result[result_length] = '\0';
+    return result;
+}
