@@ -114,9 +114,45 @@ int main() {
         snprintf(result, sizeof(result), "%d\n", is_lower_case(arg_1_str));
     }
 
+    if (strcmp(command, "is_identifier") == 0) {
+        snprintf(result, sizeof(result), "%d\n", is_identifier(arg_1_str));
+    }
+
+    if (strcmp(command, "upcase") == 0) {
+        upcase(arg_1_str);
+        snprintf(result, sizeof(result), "%s\n", arg_1_str);
+    }
+
+    if (strcmp(command, "swap_case") == 0) {
+        swap_case(arg_1_str);
+        snprintf(result, sizeof(result), "%s\n", arg_1_str);
+    }
+
+    if (strcmp(command, "reverse") == 0) {
+        reverse(arg_1_str);
+        snprintf(result, sizeof(result), "%s\n", arg_1_str);
+    }
+
+    if (strcmp(command, "duplicate") == 0) {
+        char* duplicated = duplicate_string(arg_1_str, arg_2_int);
+        snprintf(result, sizeof(result), "%s\n", duplicated);
+        free(duplicated);
+    }
+
+    if (strcmp(command, "concat_strings") == 0) {
+        char* concatenated = concat_strings(arg_1_str, arg_2_str);
+        snprintf(result, sizeof(result), "%s\n", concatenated);
+        free(concatenated);
+    }
+
+    if (strcmp(command, "delete_symbol") == 0) {
+        char* deleted = delete_symbol(arg_1_str, arg_2_int);
+        snprintf(result, sizeof(result), "%s\n", deleted);
+        free(deleted);
+    }
+
     write_result_to_file(result);
     fclose(fptr);
 
     return 0;
  }
-

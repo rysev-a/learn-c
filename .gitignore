@@ -4,3 +4,5 @@ __pycache__/
 .idea
 cmake-build-debug
 tmp
+.DS_Store
+tasks.txt

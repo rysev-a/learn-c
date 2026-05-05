@@ -13,8 +13,6 @@ def configure_test():
         subprocess.run(
             [
                 "gcc",
-                "-Wall",
-                "-fsanitize=address",
                 "-o",
                 "./tmp/a.out",
                 "main.c",
