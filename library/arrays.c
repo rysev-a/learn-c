@@ -30,3 +30,29 @@ void bubble_sorting(int number_array[], int array_size) {
         }
     }
 }
+
+void swap(int number_array[], int left_index, int right_index) {
+    int temp = number_array[left_index];
+    number_array[left_index] = number_array[right_index];
+    number_array[right_index] = temp;
+}
+
+void gnome_sort(int number_array[], int array_size) {
+    int index = 1;
+    int direction = 1;
+
+    while (index < array_size) {
+
+        if (number_array[index - 1] > number_array[index]) {
+            swap(number_array, index - 1, index);
+
+            if (index > 1) {
+                direction = -1;
+            }
+        } else {
+            direction = 1;
+        }
+
+        index = index + direction;
+    }
+}
