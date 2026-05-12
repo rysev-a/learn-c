@@ -23,12 +23,6 @@ int is_substring(char* substring, char* full_string) {
     int max_match = 0;
 
     while (full_string[main_index]) {
-        printf("main_index: %d\n", main_index);
-        for (int counter_i=0;counter_i < (sizeof (counters) /sizeof (counters[0]));counter_i++) {
-            printf("%d_",counters[counter_i]);
-        }
-
-
         if (full_string[main_index] == substring[0]) {
             counters[main_index] = 1;
         }
