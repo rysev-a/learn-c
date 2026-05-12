@@ -1,5 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 int get_string_length(char* input_string) {
     int i = 0;
@@ -199,6 +201,46 @@ char* delete_symbol(char* input_str, int index) {
             continue;
         }
         result[i - shift] = input_str[i];
+    }
+
+    result[result_length] = '\0';
+    return result;
+}
+
+char* title_case(char* input_string) {
+    int string_length = get_string_length(input_string);
+    char* result = malloc(string_length + 1);
+
+    for (int i = 0; i < string_length; i++) {
+        if (i == 0 || input_string[i - 1] == ' ') {
+            result[i] = toupper(input_string[i]);
+        } else {
+            result[i] = input_string[i];
+        }
+    }
+
+    result[string_length] = '\0';
+    return result;
+}
+
+char* pad_left(char* input_string, int total_width, char pad) {
+    int input_len = strlen(input_string);
+    int result_length = 0;
+
+    if (total_width > input_len) {
+        result_length = total_width;
+    } else {
+        result_length = input_len;
+    }
+
+    char* result = malloc(result_length + 1);
+
+    for (int i = 0; i < result_length; i++) {
+        if (i < total_width - input_len) {
+            result[i] = pad;
+        } else {
+            result[i] = input_string[i - (total_width - input_len)];
+        }
     }
 
     result[result_length] = '\0';
