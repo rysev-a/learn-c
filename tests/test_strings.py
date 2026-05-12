@@ -1,180 +1,267 @@
+import ctypes
+import pathlib
+import subprocess
+
 import pytest
 
 
-def test_get_string_length(configure_test, get_output_content):
-    configure_test(["length", "s some long string", "_"])
-    assert get_output_content() == "16\n"
+@pytest.fixture
+def strings():
+    pathlib.Path("./tmp").mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            "gcc",
+            "-shared",
+            "-o",
+            "tmp/libstrings.so",
+            "library/strings.c",
+        ],
+        check=True,
+    )
+
+    strings_module = ctypes.CDLL("./tmp/libstrings.so")
+    strings_module.get_string_length.argtypes = [ctypes.c_char_p]
+    strings_module.get_string_length.restype = ctypes.c_int
+
+    strings_module.is_substring.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    strings_module.is_substring.restype = ctypes.c_int
+
+    strings_module.is_beginning.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    strings_module.is_beginning.restype = ctypes.c_int
+
+    strings_module.is_palindrome.argtypes = [ctypes.c_char_p]
+    strings_module.is_palindrome.restype = ctypes.c_int
+
+    strings_module.is_lower_case.argtypes = [ctypes.c_char_p]
+    strings_module.is_lower_case.restype = ctypes.c_int
+
+    strings_module.is_identifier.argtypes = [ctypes.c_char_p]
+    strings_module.is_identifier.restype = ctypes.c_int
+
+    strings_module.upcase.argtypes = [ctypes.c_char_p]
+    strings_module.upcase.restype = ctypes.c_void_p
+
+    strings_module.swap_case.argtypes = [ctypes.c_char_p]
+    strings_module.swap_case.restype = ctypes.c_void_p
+
+    strings_module.reverse.argtypes = [ctypes.c_char_p]
+    strings_module.reverse.restype = ctypes.c_void_p
+
+    strings_module.duplicate_string.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    strings_module.duplicate_string.restype = ctypes.c_char_p
+
+    strings_module.concat_strings.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    strings_module.concat_strings.restype = ctypes.c_char_p
+
+    strings_module.delete_symbol.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    strings_module.delete_symbol.restype = ctypes.c_char_p
+
+    strings_module.title_case.argtypes = [ctypes.c_char_p]
+    strings_module.title_case.restype = ctypes.c_char_p
+
+    return strings_module
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        (b"", 0),
+        (b"a", 1),
+        (b"abc", 3),
+        (b"some long string", 16),
+        (b"  leading and trailing  ", 24),
+        (b"line1\nline2", 11),
+        (b"1234567890", 10),
+        (b"with-symbols_#%!", 16),
+    ],
+)
+def test_get_string_length(strings, input_text, expected):
+    result = strings.get_string_length(input_text)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
     "substring, full_string, expected",
     [
-        ("abc", "abcSdf", 1),
-        ("abc", "EFDabcSdf", 1),
-        ("abc", "String", 0),
-        ("babcbc", "efbababcbcdef", 1),
+        (b"lo", b"hello", 1),
+        (b"world", b"hello", 0),
+        (b"aba", b"cababd", 1),
+        (b"abc", b"abcSdf", 1),
+        (b"abc", b"EFDabcSdf", 1),
+        (b"abc", b"String", 0),
+        (b"babcbc", b"efbababcbcdef", 1),
     ],
 )
-def test_is_substring(
-    configure_test, get_output_content, substring, full_string, expected
-):
-    configure_test(["is_substring", "s " + substring, "s " + full_string])
-    assert get_output_content() == str(expected) + "\n"
+def test_is_substring(strings, substring, full_string, expected):
+    result = strings.is_substring(substring, full_string)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
     "beginning, full_string, expected",
     [
-        ("abc", "abc", 1),
-        ("abc", "String", 0),
-        ("cde", "cdea", 1),
+        (b"abc", b"abc", 1),
+        (b"abc", b"String", 0),
+        (b"cde", b"cdea", 1),
     ],
 )
-def test_is_beginning(
-    configure_test, get_output_content, beginning, full_string, expected
-):
-    configure_test(["is_beginning", "s " + beginning, "s " + full_string])
-    assert get_output_content() == str(expected) + "\n"
+def test_is_beginning(strings, beginning, full_string, expected):
+    result = strings.is_beginning(beginning, full_string)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abcba", "_", 1),
-        ("abc", "_", 0),
-        ("abba", "_", 1),
+        (b"abcba", 1),
+        (b"abc", 0),
+        (b"abba", 1),
     ],
 )
-def test_is_palindrome(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["is_palindrome", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_is_palindrome(strings, input_text, expected):
+    result = strings.is_palindrome(input_text)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abc", "_", 1),
-        ("ABcd", "_", 0),
-        ("werwe", "_", 1),
-        ("123", "_", 0),
+        (b"abc", 1),
+        (b"ABcd", 0),
+        (b"werwe", 1),
+        (b"123", 0),
     ],
 )
-def test_is_lower_case(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["is_lower_case", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_is_lower_case(strings, input_text, expected):
+    result = strings.is_lower_case(input_text)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abc", "_", 1),
-        ("ABcd", "_", 1),
-        ("werwe", "_", 1),
-        ("123", "_", 0),
-        ("abcd123", "_", 1),
-        ("abcd_123", "_", 0),
-        ("abcd-123", "_", 0),
-        ("abcd#$", "_", 0),
-        ("abcd123efg", "_", 1),
+        (b"abc", 1),
+        (b"ABcd", 1),
+        (b"werwe", 1),
+        (b"123", 0),
+        (b"abcd123", 1),
+        (b"abcd_123", 0),
+        (b"abcd-123", 0),
+        (b"abcd#$", 0),
+        (b"abcd123efg", 1),
     ],
 )
-def test_is_identifier(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["is_identifier", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_is_identifier(strings, input_text, expected):
+    result = strings.is_identifier(input_text)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abc", "_", "ABC"),
-        ("ABcd", "_", "ABCD"),
-        ("werwe", "_", "WERWE"),
-        ("123", "_", "123"),
-        ("abcd123", "_", "ABCD123"),
+        (b"abc123", b"ABC123"),
+        (b"AlreadyUP", b"ALREADYUP"),
+        (b"mIxEd", b"MIXED"),
+        (b"ABcd", b"ABCD"),
+        (b"werwe", b"WERWE"),
+        (b"123", b"123"),
+        (b"abcd123", b"ABCD123"),
     ],
 )
-def test_upcase(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["upcase", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_upcase(strings, input_text, expected):
+    input_string = ctypes.create_string_buffer(input_text)
+    strings.upcase(input_string)
+    assert input_string.value == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abc", "_", "ABC"),
-        ("ABcd", "_", "abCD"),
-        ("werwe", "_", "WERWE"),
-        ("123", "_", "123"),
-        ("abcd123", "_", "ABCD123"),
+        (b"hello world", b"Hello World"),
+        (b"already Title", b"Already Title"),
+        (b"a  b", b"A  B"),
     ],
 )
-def test_swap_case(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["swap_case", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_title_case(strings, input_text, expected):
+    result = strings.title_case(input_text)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, _, expected",
+    "input_text, expected",
     [
-        ("abc", "_", "cba"),
-        ("ABcd", "_", "dcBA"),
-        ("werwe", "_", "ewrew"),
-        ("123", "_", "321"),
-        ("abcd123", "_", "321dcba"),
+        (b"abc", b"ABC"),
+        (b"ABcd", b"abCD"),
+        (b"123", b"123"),
+        (b"werwe", b"WERWE"),
+        (b"abcd123", b"ABCD123"),
     ],
 )
-def test_reverse(configure_test, get_output_content, input_string, _, expected):
-    configure_test(["reverse", "s " + input_string, "s " + _])
-    assert get_output_content() == str(expected) + "\n"
+def test_swap_case(strings, input_text, expected):
+    input_string = ctypes.create_string_buffer(input_text)
+    strings.swap_case(input_string)
+    assert input_string.value == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, count, expected",
+    "input_text, expected",
     [
-        ("abc", 3, "abcabcabc"),
-        ("ABcd", 2, "ABcdABcd"),
-        ("werwe", 1, "werwe"),
-        ("123", 4, "123123123123"),
-        ("abcd123", 2, "abcd123abcd123"),
+        (b"abc", b"cba"),
+        (b"ABcd", b"dcBA"),
+        (b"123", b"321"),
+        (b"werwe", b"ewrew"),
+        (b"abcd123", b"321dcba"),
     ],
 )
-def test_duplicate(configure_test, get_output_content, input_string, count, expected):
-    configure_test(["duplicate", "s " + input_string, "d " + str(count)])
-    assert get_output_content() == str(expected) + "\n"
+def test_reverse(strings, input_text, expected):
+    input_string = ctypes.create_string_buffer(input_text)
+    strings.reverse(input_string)
+    assert input_string.value == expected
 
 
 @pytest.mark.parametrize(
-    "left_string, right_string, expected",
+    "input_text, count, expected",
     [
-        ("abc", "def", "abcdef"),
-        ("ABcd", "efg", "ABcdefg"),
-        ("werwe", "xyz", "werwexyz"),
-        ("123", "456", "123456"),
-        ("abcd123", "efg", "abcd123efg"),
-        ("0", "123", "0123"),
-        ("012", "3", "0123"),
+        (b"abc", 3, b"abcabcabc"),
+        (b"ABcd", 2, b"ABcdABcd"),
+        (b"123", 4, b"123123123123"),
+        (b"werwe", 1, b"werwe"),
+        (b"abcd123", 2, b"abcd123abcd123"),
     ],
 )
-def test_concat_strings(
-    configure_test, get_output_content, left_string, right_string, expected
-):
-    configure_test(["concat_strings", "s " + left_string, "s " + right_string])
-    assert get_output_content() == str(expected) + "\n"
+def test_duplicate_string(strings, input_text, count, expected):
+    result = strings.duplicate_string(input_text, count)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
-    "input_string, index, expected",
+    "left, right, expected",
     [
-        ("abc", 0, "bc"),
-        ("ABcd", 1, "Acd"),
-        ("werwe", 2, "wewe"),
-        ("1234567", 3, "123567"),
-        ("abcd123", 2, "abd123"),
-        ("012", 1, "02"),
+        (b"abc", b"def", b"abcdef"),
+        (b"ABcd", b"efg", b"ABcdefg"),
+        (b"123", b"456", b"123456"),
+        (b"werwe", b"xyz", b"werwexyz"),
+        (b"abcd123", b"efg", b"abcd123efg"),
+        (b"0", b"123", b"0123"),
+        (b"012", b"3", b"0123"),
     ],
 )
-def test_delete_symbol(
-    configure_test, get_output_content, input_string, index, expected
-):
-    configure_test(["delete_symbol", "s " + input_string, "d " + str(index)])
-    assert get_output_content() == str(expected) + "\n"
+def test_concat_strings(strings, left, right, expected):
+    result = strings.concat_strings(left, right)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, index, expected",
+    [
+        (b"abc", 0, b"bc"),
+        (b"ABcd", 1, b"Acd"),
+        (b"1234567", 3, b"123567"),
+        (b"werwe", 2, b"wewe"),
+        (b"abcd123", 2, b"abd123"),
+        (b"012", 1, b"02"),
+    ],
+)
+def test_delete_symbol(strings, input_text, index, expected):
+    result = strings.delete_symbol(input_text, index)
+    assert result == expected

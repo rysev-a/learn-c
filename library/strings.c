@@ -222,27 +222,3 @@ char* title_case(char* input_string) {
     result[string_length] = '\0';
     return result;
 }
-
-char* pad_left(char* input_string, int total_width, char pad) {
-    int input_len = strlen(input_string);
-    int result_length = 0;
-
-    if (total_width > input_len) {
-        result_length = total_width;
-    } else {
-        result_length = input_len;
-    }
-
-    char* result = malloc(result_length + 1);
-
-    for (int i = 0; i < result_length; i++) {
-        if (i < total_width - input_len) {
-            result[i] = pad;
-        } else {
-            result[i] = input_string[i - (total_width - input_len)];
-        }
-    }
-
-    result[result_length] = '\0';
-    return result;
-}
