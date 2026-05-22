@@ -2,11 +2,16 @@
   {
     "label": "compile and run",
     "command": "gcc main.c -o main -Wall -fsanitize=address && ./main",
-    "reveal": "never"
+    "reveal": "never",
   },
   {
     "label": "test",
     "command": "uv run pytest",
-    "reveal": "never"
-  }
+    "reveal": "never",
+  },
+  {
+    "label": "snake",
+    "command": "gcc snake.c -o snake -lncurses -ltinfo -Wall -fsanitize=address && ./snake",
+    "reveal": "never",
+  },
 ]
